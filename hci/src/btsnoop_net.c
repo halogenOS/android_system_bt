@@ -114,6 +114,11 @@ void btsnoop_net_write(const void *data, size_t length) {
       length -= ret;
     } while ((length > 0) && (ret != -1));
   }
+  if (client_socket_ != -1) {
+    if (TEMP_FAILURE_RETRY(send(client_socket_, data, length, 0)) == -1 && errno == ECONNRESET) {
+      safe_close_(&client_socket_);
+    }
+  }
 
   pthread_mutex_unlock(&client_socket_lock_);
 }
@@ -189,7 +194,7 @@ static void *listen_fn_(UNUSED_ATTR void *context) {
         LOG_WARN("%s error accepting TCP socket: %s", __func__, strerror(errno));
         continue;
       }
-    } else if ((listen_socket_local_ != -1) && FD_ISSET(listen_socket_local_, &sock_fds)){
+    } else if ((listen_socket_local_ != -1) && FD_ISSET(listen_socket_local_, &sock_fds)) {
       struct sockaddr_un cliaddr;
       int length;
 
@@ -203,13 +208,19 @@ static void *listen_fn_(UNUSED_ATTR void *context) {
         continue;
       }
     }
+    int client_socket = TEMP_FAILURE_RETRY(accept(listen_socket_, NULL, NULL));
+    if (client_socket == -1) {
+      if (errno == EINVAL || errno == EBADF) {
+        break;
+      }
+    }
 
     /* When a new client connects, we have to send the btsnoop file header. This allows
        a decoder to treat the session as a new, valid btsnoop file. */
     pthread_mutex_lock(&client_socket_lock_);
-    safe_close_(&client_socket_btsnoop);
-    client_socket_btsnoop = client_socket;
-    send(client_socket_btsnoop, "btsnoop\0\0\0\0\1\0\0\x3\xea", 16, 0);
+    safe_close_(&client_socket_);
+    client_socket_ = client_socket;
+    TEMP_FAILURE_RETRY(send(client_socket_, "btsnoop\0\0\0\0\1\0\0\x3\xea", 16, 0));
     pthread_mutex_unlock(&client_socket_lock_);
 
     FD_ZERO(&sock_fds);

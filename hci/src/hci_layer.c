@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <cutils/properties.h>
+#include <errno.h>
 #include <string.h>
 #include <signal.h>
 #include <string.h>
@@ -551,6 +552,8 @@ static void command_timed_out(UNUSED_ATTR void *context) {
   } else {
      LOG_ERROR("hci_cmd_timeout: SOC Status is reset\n ");
   }
+  
+  TEMP_FAILURE_RETRY(usleep(10000));
   kill(getpid(), SIGKILL);
 }
 
