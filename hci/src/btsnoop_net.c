@@ -114,9 +114,9 @@ void btsnoop_net_write(const void *data, size_t length) {
       length -= ret;
     } while ((length > 0) && (ret != -1));
   }
-  if (client_socket_ != -1) {
-    if (TEMP_FAILURE_RETRY(send(client_socket_, data, length, 0)) == -1 && errno == ECONNRESET) {
-      safe_close_(&client_socket_);
+  if (client_socket_btsnoop != -1) {
+    if (TEMP_FAILURE_RETRY(send(client_socket_btsnoop, data, length, 0)) == -1 && errno == ECONNRESET) {
+      safe_close_(&client_socket_btsnoop);
     }
   }
 
@@ -218,9 +218,9 @@ static void *listen_fn_(UNUSED_ATTR void *context) {
     /* When a new client connects, we have to send the btsnoop file header. This allows
        a decoder to treat the session as a new, valid btsnoop file. */
     pthread_mutex_lock(&client_socket_lock_);
-    safe_close_(&client_socket_);
-    client_socket_ = client_socket;
-    TEMP_FAILURE_RETRY(send(client_socket_, "btsnoop\0\0\0\0\1\0\0\x3\xea", 16, 0));
+    safe_close_(&client_socket_btsnoop);
+    client_socket_btsnoop = client_socket;
+    TEMP_FAILURE_RETRY(send(client_socket_btsnoop, "btsnoop\0\0\0\0\1\0\0\x3\xea", 16, 0));
     pthread_mutex_unlock(&client_socket_lock_);
 
     FD_ZERO(&sock_fds);
