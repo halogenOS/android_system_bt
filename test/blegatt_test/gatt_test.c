@@ -1276,7 +1276,7 @@ void bdt_enable(void)
         bdt_log("Bluetooth is already enabled");
         return;
     }
-    status = sBtInterface->enable();
+    status = sBtInterface->enable(is_restricted_mode());
 
     check_return_status(status);
 }
