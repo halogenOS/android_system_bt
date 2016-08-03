@@ -1778,18 +1778,6 @@ bt_status_t btif_storage_set_hidd(bt_bdaddr_t *remote_bd_addr)
 **
 *******************************************************************************/
 bt_status_t btif_storage_remove_hidd(bt_bdaddr_t *remote_bd_addr)
-
-/*******************************************************************************
-**
-** Function         btif_storage_is_restricted_device
-**
-** Description      BTIF storage API - checks if this device is a restricted device
-**
-** Returns          TRUE  if the device is labeled as restricted
-**                  FALSE otherwise
-**
-*******************************************************************************/
-BOOLEAN btif_storage_is_restricted_device(const bt_bdaddr_t *remote_bd_addr)
 {
     bdstr_t bdstr;
     bdaddr_to_string(remote_bd_addr, bdstr, sizeof(bdstr));
@@ -1797,5 +1785,22 @@ BOOLEAN btif_storage_is_restricted_device(const bt_bdaddr_t *remote_bd_addr)
     btif_config_remove(bdstr, "HidDeviceCabled");
     btif_config_save();
 
+    return btif_config_exist(bdstr, "Restricted");
+}
+
+/*******************************************************************************
+**
+** Function         btif_storage_is_restricted_device
+**
+** Description      BTIF storage API - checks if this device is a restricted device
+**
+** Returns          true  if the device is labeled as restricted
+**                  false otherwise
+**
+*******************************************************************************/
+bool btif_storage_is_restricted_device(const bt_bdaddr_t *remote_bd_addr)
+{
+    bdstr_t bdstr;
+    bdaddr_to_string(remote_bd_addr, bdstr, sizeof(bdstr));
     return btif_config_exist(bdstr, "Restricted");
 }
