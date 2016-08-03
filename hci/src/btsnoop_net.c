@@ -208,7 +208,7 @@ static void *listen_fn_(UNUSED_ATTR void *context) {
         continue;
       }
     }
-    int client_socket = TEMP_FAILURE_RETRY(accept(listen_socket_, NULL, NULL));
+    client_socket = TEMP_FAILURE_RETRY(accept(listen_socket_, NULL, NULL));
     if (client_socket == -1) {
       if (errno == EINVAL || errno == EBADF) {
         break;
