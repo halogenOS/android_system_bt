@@ -1754,6 +1754,10 @@ static bt_status_t voip_network_type_wifi(bthf_voip_state_t isVoipStarted,
 
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 static const bthf_interface_t bthfInterface = {
     sizeof(bthfInterface),
     init,
@@ -1773,8 +1777,10 @@ static const bthf_interface_t bthfInterface = {
     phone_state_change,
     cleanup,
     configure_wbs,
-    voip_network_type_wifi,
+    voip_network_type_wifi
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 /*******************************************************************************
 **

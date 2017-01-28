@@ -54,6 +54,7 @@ extern fixed_queue_t *btu_general_alarm_queue;
 #define SDP_MAX_SERVICE_RSPHDR_LEN      12
 #define SDP_MAX_SERVATTR_RSPHDR_LEN     10
 #define SDP_MAX_ATTR_RSPHDR_LEN         10
+#define PROFILE_VERSION_POSITION         7
 #define SDP_PROFILE_DESC_LENGTH          8
 #define AVRCP_SUPPORTED_FEATURES_POSITION 1
 #define AVRCP_BROWSE_SUPPORT_BITMASK    0x40
@@ -320,8 +321,6 @@ BOOLEAN sdp_reset_avrcp_cover_art_bit (tSDP_ATTRIBUTE attr, tSDP_ATTRIBUTE *p_at
     return FALSE;
 }
 
-=======
->>>>>>> parent of a872260... Dynamic HF version change based on remote hf version
 /*******************************************************************************
 **
 ** Function         sdp_server_handle_client_req
@@ -760,13 +759,6 @@ static void process_service_attr_req (tCONN_CB *p_ccb, UINT16 trans_num,
                                     |= AVRCP_BROWSE_SUPPORT_BITMASK;
         is_avrcp_browse_bit_reset = FALSE;
     }
-    if (is_hfp_fallback)
-    {
-        SDP_TRACE_ERROR("Restore HFP version to 1.6");
-        /* Update HFP version back to 1.6 */
-        p_attr->value_ptr[PROFILE_VERSION_POSITION] = 0x06;
-        is_hfp_fallback = FALSE;
-    }
     if (is_avrcp_ca_bit_reset)
     {
         /* Restore Cover Art bit */
@@ -775,10 +767,6 @@ static void process_service_attr_req (tCONN_CB *p_ccb, UINT16 trans_num,
                                 |= AVRCP_CA_SUPPORT_BITMASK;
         is_avrcp_ca_bit_reset = FALSE;
     }
-=======
-        }
-    }
->>>>>>> parent of a872260... Dynamic HF version change based on remote hf version
     /* If all the attributes have been accomodated in p_rsp,
        reset next_attr_index */
     if (xx == attr_seq.num_attr)
@@ -1106,13 +1094,6 @@ static void process_service_search_attr_req (tCONN_CB *p_ccb, UINT16 trans_num,
                                     |= AVRCP_BROWSE_SUPPORT_BITMASK;
             is_avrcp_browse_bit_reset = FALSE;
         }
-        if (is_hfp_fallback)
-        {
-            SDP_TRACE_ERROR("Restore HFP version to 1.6");
-            /* Update HFP version back to 1.6 */
-            p_attr->value_ptr[PROFILE_VERSION_POSITION] = 0x06;
-            is_hfp_fallback = FALSE;
-        }
         if (is_avrcp_ca_bit_reset)
         {
             /* Restore Cover Art bit */
@@ -1121,10 +1102,6 @@ static void process_service_search_attr_req (tCONN_CB *p_ccb, UINT16 trans_num,
                                     |= AVRCP_CA_SUPPORT_BITMASK;
             is_avrcp_ca_bit_reset = FALSE;
         }
-=======
-            }
-        }
->>>>>>> parent of a872260... Dynamic HF version change based on remote hf version
 
         /* Go back and put the type and length into the buffer */
         if (p_ccb->cont_info.last_attr_seq_desc_sent == FALSE)
